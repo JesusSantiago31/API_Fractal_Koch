@@ -1,0 +1,137 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Koch Snowflake - Generador</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="/">❄️ Factal del copo de nieve de koch</a>
+        <span class="navbar-text text-white">Fractal interactivo con mitades</span>
+      </div>
+    </nav>
+
+    <main class="container my-5">
+      <!-- Mensajes de error/éxito -->
+      {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+      
+      {% if success %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        ✅ Copo de nieve generado exitosamente!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endif %}
+
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Generar Copo de Nieve</h5>
+              <p class="card-text">Configura las opciones y presiona <strong>Generar</strong>.</p>
+
+              <form method="post" class="row g-3">
+                <div class="col-12">
+                  <label for="level" class="form-label">Iteraciones</label>
+                  <input type="number" class="form-control" id="level" name="level" min="0" max="8" value="{{ level or 3 }}" required>
+                  <div class="form-text">0-8 (valores altos = más detalle + tiempo)</div>
+                </div>
+
+              
+
+                <div class="col-12">
+                  <label for="color" class="form-label">Color de línea</label>
+                  <input type="text" class="form-control" id="color" name="color" value="{{ color or 'blue' }}" placeholder="blue, red, #1f77b4, ...">
+                </div>
+
+                <div class="col-12">
+                  <label for="half_type" class="form-label">Tipo de copo</label>
+                  <select class="form-select" id="half_type" name="half_type">
+                    <option value="complete" {% if half_type == 'complete' %}selected{% endif %}>Completo</option>
+                    <option value="inferior" {% if half_type == 'inferior' %}selected{% endif %}>Mitad Inferior</option>
+                    <option value="superior" {% if half_type == 'superior' %}selected{% endif %}>Mitad Superior</option>
+                    <option value="izquierda" {% if half_type == 'izquierda' %}selected{% endif %}>Mitad Izquierda</option>
+                    <option value="derecha" {% if half_type == 'derecha' %}selected{% endif %}>Mitad Derecha</option>
+                  </select>
+                  <div class="form-text">Elige entre el copo completo o sus mitades</div>
+                </div>
+
+                <div class="col-12 d-grid">
+                  <button type="submit" class="btn btn-primary btn-lg">Generar Copo</button>
+                </div>
+              </form>
+
+              <hr>
+
+              <!-- Botón para borrar imágenes -->
+              <form method="post" class="mt-3">
+                <input type="hidden" name="clear_images" value="true">
+                <button type="submit" class="btn btn-danger btn-sm w-100" 
+                        onclick="return confirm('¿Estás seguro de que quieres borrar TODAS las imágenes?')">
+                   Borrar Todas las Imágenes
+                </button>
+              </form>
+            </div>
+            <div class="card-footer text-muted small">
+              
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Imágenes Generadas</h5>
+                <span class="badge bg-secondary">{{ images|length }} imágenes</span>
+              </div>
+              
+              {% if images %}
+                <p class="text-muted">Carpeta: <code>{{ outdir }}</code></p>
+                <div class="row g-3">
+                  {% for img in images %}
+                  <div class="col-md-6 col-lg-4">
+                    <div class="card img-card h-100">
+                      <img src="{{ img }}" class="card-img-top" alt="Copo de Koch" loading="lazy">
+                      <div class="card-body p-2 text-center">
+                        <div class="btn-group btn-group-sm w-100">
+                          <a href="{{ img }}" target="_blank" class="btn btn-outline-primary">Abrir</a>
+                          <a href="{{ img }}" download class="btn btn-outline-success">Descargar</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="text-center py-5">
+                  <div class="text-muted mb-3">No hay imágenes generadas todavía</div>
+                  <div class="placeholder-glow">
+                    <div class="placeholder col-12" style="height: 150px;"></div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-5 text-center text-muted">
+        
+      </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
